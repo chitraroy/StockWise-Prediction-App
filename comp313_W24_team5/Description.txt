@@ -1,3 +1,4 @@
   Stock market prediction and big data are inherently challenging due to their volatile and non-linear nature. 
 The dataset contains stock data with columns representing dates, the ticker symbol (EA games in our project), and various stock metrics such as opening, closing, high, and low prices, and volume
 We will be predicting Co stock prices with an LSTM (Long Short-Term Memory) model.
+
