@@ -1,4 +1,4 @@
-Introduction:
+**Introduction:**
 Welcome to the Wiki page of our repository! This page serves as a guide to ensure smooth collaboration and effective development practices within our team.
 
 1. **Linking Pull Requests to Assigned Issues:**
