@@ -10,7 +10,7 @@ Instructions:
     Choose the issue that is assigned to you from the dropdown list.
     Provide a brief description or summary of the changes made in the PR to give reviewers context.
 
-2**. Avoiding Direct Work on Master:**
+2 **Avoiding Direct Work on Master**:
 Directly working on the master branch can lead to conflicts and difficulties in managing changes, especially in a collaborative environment. Therefore, it's best to refrain from making direct commits to the master branch.
 
 Instructions:
