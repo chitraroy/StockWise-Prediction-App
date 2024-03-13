@@ -18,23 +18,20 @@ def register():
         role = request.form["role"]
 
         if not username or not password or not role:
-            error = 'Missing information'
+            error = 'Missing information.Please fill out all fields.'
             return render_template("register.html", error = error)        
 
         # Check if username already exists
         user = User.find_by_username(username=username)
         if user:
-            error = 'Username already exists'
+            error = 'Username already exists.Choose a different one.'
             return render_template("register.html", error = error)
 
         # Hash password with bcrypt
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        hashed_password = generate_password_hash(password)
-        new_user_id = User.create_user(username, password, role)
-        db.session.add(new_user_id)
-        db.session.commit()
+        User.create_user(username, hashed_password, role)
 
-        return redirect(url_for("index"))
+        return redirect(url_for("auth.login"))
 
     return render_template("register.html", error = error)
 
@@ -47,7 +44,7 @@ def login():
         password = request.form["password"]
 
         user = User.find_by_username(username=username)
-        if user and bcrypt.check_password_hash(user.password_hash, password):
+        if user and check_password_hash(user['password_hash'], password):
               # Create JWT token
             access_token = create_access_token(identity=username)
             return redirect(url_for("index", user = username))
