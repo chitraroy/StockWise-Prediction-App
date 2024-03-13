@@ -1,4 +1,4 @@
-#Imports
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,6 +8,12 @@ from keras.layers import Dense, LSTM
 from keras.optimizers import Adam
 from sklearn.metrics import mean_squared_error
 import matplotlib.dates as mdates
+from pandas.tseries.offsets import BDay
+from models import StockPrediction  # Importing from models.py
+from app import create_app, mongo_db
+from pymongo import MongoClient
+import logging
+from extensions import mongo_db 
 
 
 url = "C:/Users/elfki/Desktop/W24/COMP313/comp313_W24_team5/sp500_stocks.csv"
@@ -79,6 +85,9 @@ print('Train Score: %.2f RMSE' % trainScore)
 testScore = np.sqrt(mean_squared_error(testY, testPredict))
 print('Test Score: %.2f RMSE' % testScore)
 
+
+
+
 # ----------------Plotting
 
 # Shift train predictions for plotting
@@ -121,3 +130,91 @@ plt.xlabel('Year')
 plt.ylabel('Stock Price')
 plt.legend()
 plt.show()
+
+
+
+
+# The function that generates the predictions
+
+
+
+def generate_predictions( model, look_back, dataset, scaler):
+
+    predictions = []
+
+    # Predictions for next 7 days
+    last_known_data = dataset[-look_back:].copy()
+   
+   
+
+    for _ in range(20):
+        prediction = model.predict(last_known_data.reshape(1, look_back, 4))
+        predictions.append(prediction[0][0])
+        new_data_point = np.array([last_known_data[0, 1], last_known_data[0, 2], last_known_data[0, 3], prediction[0][0]]).reshape(1, 4)
+        last_known_data = np.append(last_known_data[1:], new_data_point, axis=0)
+        pass
+    next_week_predictions = scaler.inverse_transform(np.c_[predictions, np.zeros(len(predictions)), np.zeros(len(predictions)), np.zeros(len(predictions))])[:,0]
+       
+   
+
+# Generate future dates starting from the last date in your dataset
+    last_date = df.index[-1]
+    future_dates = [last_date + BDay(i) for i in range(1, 21)]
+
+
+# Combine the predictions with dates
+    dated_predictions = zip(future_dates, next_week_predictions)
+
+    # Print predictions with dates
+    for date, prediction in dated_predictions:
+        print(f"{date.date()}: {prediction:.2f}")
+      
+    return future_dates, next_week_predictions
+
+
+
+
+#save predictions to database
+app = create_app()
+mongo_client = MongoClient(app.config['MONGO_URI'])
+mongo_db = mongo_client['cluster0'] 
+predictions_collection = mongo_db.stock_predictions
+
+def save_predictions_to_db(future_dates, next_week_predictions):
+    logging.info("Starting to save predictions to the database.")
+    try:
+        for date, prediction in zip(future_dates, next_week_predictions):
+            # Check if a prediction for this date already exists
+            existing_prediction = mongo_db.stock_predictions.find_one({'date': date})
+            if existing_prediction:
+                # Update the existing prediction
+                mongo_db.stock_predictions.update_one({'_id': existing_prediction['_id']}, {'$set': {'predicted_close_price': prediction}})
+                logging.info(f"Updated existing prediction for date: {date}")
+            else:
+                # Insert a new prediction
+                mongo_db.stock_predictions.insert_one({'date': date, 'predicted_close_price': prediction})
+                logging.info(f"Inserted new prediction for date: {date}")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+    
+
+ 
+
+if __name__ == "__main__":
+      # Configure logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    logging.basicConfig(level=logging.INFO)
+
+    # Load dataset
+    app = create_app()
+    with app.app_context():
+     
+        future_dates, next_week_predictions = generate_predictions(model, look_back, dataset, scaler)
+        save_predictions_to_db(future_dates, next_week_predictions)
+    
+   
+
+
+
+
+
