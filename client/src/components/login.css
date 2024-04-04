@@ -1,0 +1,76 @@
+/* login.css */
+
+/* Container */
+.login-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Title */
+  .login-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Form */
+  .login-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Form fields */
+  .login-container label {
+    margin-bottom: 5px;
+    color: #666;
+  }
+  
+  .login-container input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+  }
+  
+  /* Buttons */
+  .login-container button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* Login button */
+  .login-container button[type="button"]:first-of-type {
+    background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Reset button */
+  .login-container button[type="button"]:last-of-type {
+    background: linear-gradient(to right, #36d1dc 0%, #5b86e5 100%);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Button hover effect */
+  .login-container button:hover {
+    opacity: 0.9;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Responsive */
+  @media (max-width: 576px) {
+    .login-container {
+      margin: 20px;
+    }
+  }
+  
